@@ -18,7 +18,13 @@ export function validateWorkspace(value) {
   }
   return value;
 }
-export const escapeHtml = value => String(value).replace(/[&<>"']/g, char => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'}[char]));
+const htmlEscapes = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' };
+const reUnescapedHtml = /[&<>"']/g;
+const reHasUnescapedHtml = RegExp(reUnescapedHtml.source);
+export const escapeHtml = value => {
+  const str = String(value);
+  return (str && reHasUnescapedHtml.test(str)) ? str.replace(reUnescapedHtml, (chr) => htmlEscapes[chr]) : str;
+};
 const href = (workspace, action) => `https://freetwai.com/#guilds/${workspace.guild_key}/${action}`;
 export function renderWorkspace(workspace) {
   validateWorkspace(workspace);
